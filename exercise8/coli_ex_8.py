@@ -65,7 +65,7 @@ def multi_dimensional_clustering(dataPoints, means):
 
 
 
-
+print("hhellow")
 
 
 
