@@ -19,7 +19,7 @@ mat * mat.T
 
 # Task 2
 
-t, s, d = np.linalg.svd(mat)
+t, s, d = np.linalg.svd(mat, full_matrices=0)
 s = s * np.identity(9)
 
 (s * d.T).T * (s * d.T)
