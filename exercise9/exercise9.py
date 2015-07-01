@@ -1,14 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
-def matrix_string(matrix):
+# Round numpy matrix entries to make it easier to read on printing
+def matrix_string(matrix, num_digits=3):
     m = matrix.tolist()
     result = []
     for row in m:
-        result.append("\t".join([str(round(i, 3)) for i in row]))
+        result.append("\t".join([str(round(i, num_digits)) for i in row]))
     return "\n".join(result)
 
-def plot_matrix(matrix, title):
+# Plot the given matrix with a grayscale colormap
+def plot_matrix(matrix, title, labels):
     fig, ax = plt.subplots()
     
     dims = matrix.shape
@@ -16,15 +19,12 @@ def plot_matrix(matrix, title):
     ax.imshow(matrix*-1, cmap=plt.cm.gray, interpolation='nearest')
     ax.set_title(title)
 
-    # Move left and bottom spines outward by 10 points
-    ax.spines['left'].set_position(('outward', dims[0]))
-    ax.spines['bottom'].set_position(('outward', dims[1]))
-    # Hide the right and top spines
-    ax.spines['right'].set_visible(False)
-    ax.spines['top'].set_visible(False)
-    # Only show ticks on the left and bottom spines
     ax.yaxis.set_ticks_position('left')
     ax.xaxis.set_ticks_position('bottom')
+    ax.yaxis.set_ticks(np.arange(0, dims[0], 1.0))
+    ax.yaxis.set_ticklabels(labels)
+    ax.xaxis.set_ticks(np.arange(0, dims[0], 1.0))
+    ax.xaxis.set_ticklabels(labels, rotation=90)
 
     plt.show()
     
@@ -64,27 +64,26 @@ dd3 = (sp * dp).T * (sp * dp)
 tt3 = (tp * sp) * (tp * sp).T
 
 
-
-plot_matrix(dd1, "Document-document similarity 1")
-plot_matrix(dd2, "Document-document similarity 2")
-plot_matrix(dd3, "Document-document similarity 3")
-
-plot_matrix(tt1, "Term-term similarity 1")
-plot_matrix(tt2, "Term-term similarity 2")
-plot_matrix(tt3, "Term-term similarity 3")
-
-
-# print("Task 1 - Document-docment")
-# print(matrix_string(dd1))
-# print("Task 1 - Term-term")
-# print(matrix_string(tt1))
-#
-# print("Task 2 - Document-docment")
-# print(matrix_string(dd2))
-# print("Task 3 - Term-term")
-# print(matrix_string(tt2))
-#
-print("Task 3 - Document-docment")
-print(matrix_string(dd3))
-print("Task 3 - Term-term")
-print(matrix_string(tt3))
+if __name__ == "__main__":
+    args = sys.argv
+    if(len(args) != 3 or args[1] not in ["plot", "print"] or args[2] not in ["terms", "docs"]):
+        print("Usage:")
+        print("python exercise9.py [plot | print] [terms | docs]")
+        exit()
+    
+    if(args[2] == "terms"):
+        matrices = [tt1, tt2, tt3]
+        labels = ['human', 'interface', 'computer', 'user', 'system', 'response', 'time', 'EPS', 'survey', 'trees', 'graph', 'minor']
+        base_title = "Term-term similarity"
+    else:
+        matrices = [dd1, dd2, dd3]
+        labels = ["c1", "c2", "c3", "c4", "c5", "m1", "m2", "m3", "m4"]
+        base_title = "Document-document similarity"
+    
+    for i in range(1, 4):
+        title = base_title + " " + str(i)
+        if(args[1] == "print"):
+            print(title)
+            print(matrix_string(matrices.pop(0)))
+        else:
+            plot_matrix(matrices.pop(0), title, labels)
